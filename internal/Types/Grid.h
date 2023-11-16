@@ -3,7 +3,7 @@ struct Contact_Grid_Flag{
 };
 
 struct Contact_Grid_t{
-  uint32_t Flag;
+  uint32_t Flag = Contact_Grid_Flag::EnableContact;
 };
 
 typedef void (*PreSolve_Grid_cb_t)(
