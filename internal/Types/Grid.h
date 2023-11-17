@@ -16,7 +16,6 @@ typedef void (*VisualSolve_Grid_cb_t)(
   __BCOL_P(t) *,
   _vsi32 /* Grid */,
   _vf,
-  Contact_Grid_t *,
   VisualSolve_t *
 );
 
