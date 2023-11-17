@@ -7,6 +7,9 @@ static auto max(auto p0, auto p1){
 static auto abs(auto p0){
   return p0 < 0 ? -p0 : p0;
 }
+static _f clamp(_f v, _f mi, _f ma){
+  return v < mi ? mi : v > ma ? ma : v;
+}
 
 template <uint8_t ts>
 struct iterate_grid_for_rectangle_t{
