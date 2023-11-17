@@ -26,8 +26,8 @@
   #define BCOL_set_VisualSolve 0
 #endif
 
-#ifdef BCOL_set_VisualSolve
-  #ifdef BCOL_set_SupportGrid
+#if BCOL_set_VisualSolve != 0
+  #if BCOL_set_SupportGrid != 0
     #ifndef BCOL_set_VisualSolve_GridContact
       #error define BCOL_set_VisualSolve_GridContact
     #endif
@@ -71,7 +71,7 @@
 #endif
 #undef BCOL_Include
 #if BCOL_set_VisualSolve != 0
-  #ifdef BCOL_set_SupportGrid
+  #if BCOL_set_SupportGrid != 0
     #undef BCOL_set_VisualSolve_GridContact
   #endif
 #endif
