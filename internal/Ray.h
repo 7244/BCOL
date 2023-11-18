@@ -9,9 +9,13 @@
       }
     }
 
-    _vf at = p / GridBlockSize;
-    _vsi32 gi = at;
-    _vf r = at - _vsi32(at);
+    p /= GridBlockSize;
+    _vf at = p;
+    _vsi32 gi;
+    for(uint32_t d = 0; d < _vf::size(); d++){
+      gi[d] = at[d] + (at[d] < _f(0) ? _f(-1) : _f(0));
+    }
+    _vf r = at - gi;
     while(1){
       {
         bool Contact;
@@ -21,6 +25,7 @@
           this->VisualSolve_Grid_cb(
             this,
             gi,
+            p,
             at,
             &VisualSolve);
           return VisualSolve;

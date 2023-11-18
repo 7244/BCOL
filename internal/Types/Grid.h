@@ -14,8 +14,9 @@ typedef void (*PreSolve_Grid_cb_t)(
 );
 typedef void (*VisualSolve_Grid_cb_t)(
   __BCOL_P(t) *,
-  _vsi32 /* Grid */,
-  _vf,
+  _vsi32, /* grid index */
+  _vf, /* ray source, normalized */
+  _vf, /* ray at, normalized */
   VisualSolve_t *
 );
 
