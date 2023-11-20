@@ -56,7 +56,7 @@ struct __BCOL_P(t){
       _4f rgba;
       _vf at;
       _vf normal;
-      f32_t emit;
+      _f emit;
     };
   #endif
 
@@ -80,11 +80,15 @@ struct __BCOL_P(t){
 
     struct Contact_Shape_t{
       uint32_t Flag = Contact_Shape_Flag::EnableContact;
-      PreSolveAfter_Shape_cb_t AfterCB = [](
-        __BCOL_P(t) *,
-        const ShapeInfoPack_t *,
-        const ShapeInfoPack_t *
-      ){};
+      PreSolveAfter_Shape_cb_t AfterCB
+      #if BCOL_set_HaveDefaultCB == 1
+        = [](
+          __BCOL_P(t) *,
+          const ShapeInfoPack_t *,
+          const ShapeInfoPack_t *
+        ){}
+      #endif
+      ;
     };
 
     typedef void (*PreSolve_Shape_cb_t)(
@@ -106,18 +110,75 @@ struct __BCOL_P(t){
       Contact->Flag ^= Contact->Flag & Contact_Shape_Flag::EnableContact;
     }
 
-    PreSolve_Shape_cb_t PreSolve_Shape_cb;
+    PreSolve_Shape_cb_t PreSolve_Shape_cb
+    #if BCOL_set_HaveDefaultCB == 1
+      = [](
+        __BCOL_P(t) *,
+        const ShapeInfoPack_t *,
+        const ShapeInfoPack_t *,
+        Contact_Shape_t *
+      ){}
+    #endif
+    ;
   #endif
 
   #if BCOL_set_SupportGrid == 1
     _f GridBlockSize;
-    PreSolve_Grid_cb_t PreSolve_Grid_cb;
-    #if BCOL_set_VisualSolve == 1
-      VisualSolve_Grid_cb_t VisualSolve_Grid_cb;
+    PreSolve_Grid_cb_t PreSolve_Grid_cb
+    #if BCOL_set_HaveDefaultCB == 1
+      = [](
+        __BCOL_P(t) *,
+        const ShapeInfoPack_t *,
+        _vsi32 /* Grid */,
+        Contact_Grid_t *
+      ){}
+    #endif
+    ;
+  #endif
+  #if BCOL_set_VisualSolve == 1
+    typedef void (*VisualSolve_Shape_cb_t)(
+      __BCOL_P(t) *,
+      const ShapeInfoPack_t *,
+      _vf, /* ray source */
+      _vf, /* ray at */
+      VisualSolve_t *
+    );
+    VisualSolve_Shape_cb_t VisualSolve_Shape_cb
+    #if BCOL_set_HaveDefaultCB == 1
+      = [](
+        __BCOL_P(t) *,
+        const ShapeInfoPack_t *,
+        _vf,
+        _vf,
+        VisualSolve_t *
+      ){}
+    #endif
+    ;
+    #if BCOL_set_SupportGrid == 1
+      VisualSolve_Grid_cb_t VisualSolve_Grid_cb
+      #if BCOL_set_HaveDefaultCB == 1
+        = [](
+          __BCOL_P(t) *,
+          _vsi32,
+          _vf,
+          _vf,
+          VisualSolve_t *
+        ){}
+      #endif
+      ;
     #endif
   #endif
   #ifdef BCOL_set_PostSolve_Grid
-    PostSolve_Grid_cb_t PostSolve_Grid_cb;
+    PostSolve_Grid_cb_t PostSolve_Grid_cb
+    #if BCOL_set_HaveDefaultCB == 1
+      = [](
+        __BCOL_P(t) *,
+        const ShapeInfoPack_t *,
+        _vsi32 /* Grid */,
+        ContactResult_Grid_t *
+      ){}
+    #endif
+    ;
   #endif
 
   #if BCOL_set_StepNumber == 1

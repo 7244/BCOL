@@ -146,3 +146,32 @@ struct iterate_grid_for_circle_t{
       return _it(gbs, wp, r);
     }
 };
+
+bool ray_circle_intersection(
+  _vf ray_pos,
+  _vf ray_dir,
+  _vf cpos,
+  _f r,
+  _vf &intersection_position
+){
+  _vf ray_to_circle = cpos - ray_pos;
+
+  _vf projection = ray_to_circle.dot(ray_dir);
+
+  if(projection < 0) {
+    return false;
+  }
+
+  _vf closest_point = ray_pos + ray_dir * projection;
+
+  /* intersection distance */
+  _f interdist = (cpos - closest_point).length();
+
+  if(interdist > r){
+    return false;
+  }
+
+  intersection_position = ray_pos + ray_dir * projection - ray_to_circle.normalize() * std::sqrt(r * r - interdist * interdist);
+
+  return true;
+}
