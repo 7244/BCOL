@@ -30,11 +30,11 @@ void CPC_Circle_Square(
         continue;
       }
       for(uint32_t d0 = 0; d0 < _dc; d0++){
-        op0[d0] = p1[d0] + fan::math::copysign(p1Size + p0Size, Sp0[d0]);
-        oDirection[d0] = fan::math::copysign(_f(1), Sp0[d0]);
+        (*op0)[d0] = p1[d0] + fan::math::copysign(p1Size + p0Size, Sp0[d0]);
+        (*oDirection)[d0] = fan::math::copysign(_f(1), Sp0[d0]);
       }
-      op0[d] = p0[d];
-      oDirection[d] = 0;
+      (*op0)[d] = p0[d];
+      (*oDirection)[d] = 0;
       break;
     }
   }
