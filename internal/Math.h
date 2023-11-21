@@ -16,13 +16,21 @@ struct iterate_grid_for_rectangle_t{
     _vsi32 gs; /* grid start */
   private:
     uint8_t c = 0;
-    _vsi32 ge[_dc]; /* grid end */
+    _vsi32 ge; /* grid end */
     bool NeedInit = true;
 
     void InitCurrent(const auto &gbs, const auto &wp, f32_t er){
       if(c < _dc){
-        gs[c] = (wp[c] - er) / gbs[c];
-        ge[c] = (wp[c] + er) / gbs[c];
+        _f wpm = wp[c] - er;
+        _f wpp = wp[c] + er;
+        gs[c] = wpm / gbs[c];
+        ge[c] = wpp / gbs[c];
+        if(wpm < 0){
+          gs[c]--;
+        }
+        if(wpp < 0){
+          ge[c]--;
+        }
       }
       if(c + 1 == _dc){
         gs[c]--; /* we increase this even before check ge[c] so this is needed */
