@@ -3,7 +3,7 @@
     _vf position,
     _vf direction
   ){
-    for(uint32_t i = 0; i < _vf::size(); i++){
+    for(uint32_t i = 0; i < _dc; i++){
       if(direction[i] == 0){
         direction[i] = 0.00001;
       }
@@ -17,7 +17,7 @@
       }grid_result;
       grid_result.np = position / GridBlockSize;
       grid_result.at = grid_result.np;
-      for(uint32_t d = 0; d < _vf::size(); d++){
+      for(uint32_t d = 0; d < _dc; d++){
         grid_result.gi[d] = grid_result.at[d] + (grid_result.at[d] < _f(0) ? _f(-1) : _f(0));
       }
 
@@ -36,7 +36,7 @@
 
         _vf left;
         #if 0
-          for(uint32_t i = 0; i < _vf::size(); i++){
+          for(uint32_t i = 0; i < _dc; i++){
             if(direction[i] > 0){
               left[i] = f32_t(1) - r[i];
             }
@@ -54,7 +54,7 @@
         #endif
 
         f32_t min_multipler = multiplers.min();
-        for(uint32_t i = 0; i < _vf::size(); i++){
+        for(uint32_t i = 0; i < _dc; i++){
           if(multiplers[i] == min_multipler){
             grid_result.gi[i] += copysign((sint32_t)1, direction[i]);
             r[i] -= copysign((f32_t)1, direction[i]);
@@ -70,7 +70,7 @@
       ShapeInfoPack_t sip;
       _vf intersection_pos;
     }closest_shape;
-    /* TODO bad */
+    closest_shape.sip.ObjectID.sic();
     closest_shape.intersection_pos = position + 999999999;
 
     {
@@ -120,7 +120,7 @@
       else
     #endif
     {
-      if((closest_shape.intersection_pos - position).length() > BCOL_set_VisualSolve_dmax){
+      if(closest_shape.sip.ObjectID.iic()){
         VisualSolve.rgba = _4f(0, 0, 0, 1);
         VisualSolve.normal = 0;
         VisualSolve.emit = 0;

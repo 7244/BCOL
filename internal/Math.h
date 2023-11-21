@@ -11,21 +11,20 @@ static _f clamp(_f v, _f mi, _f ma){
   return v < mi ? mi : v > ma ? ma : v;
 }
 
-template <uint8_t ts>
 struct iterate_grid_for_rectangle_t{
   public:
-    fan::vec_wrap_t<ts, sint32_t> gs; /* grid start */
+    _vsi32 gs; /* grid start */
   private:
     uint8_t c = 0;
-    fan::vec_wrap_t<ts, sint32_t> ge[ts]; /* grid end */
+    _vsi32 ge[_dc]; /* grid end */
     bool NeedInit = true;
 
     void InitCurrent(const auto &gbs, const auto &wp, f32_t er){
-      if(c < ts){
+      if(c < _dc){
         gs[c] = (wp[c] - er) / gbs[c];
         ge[c] = (wp[c] + er) / gbs[c];
       }
-      if(c + 1 == ts){
+      if(c + 1 == _dc){
         gs[c]--; /* we increase this even before check ge[c] so this is needed */
       }
     }
@@ -35,7 +34,7 @@ struct iterate_grid_for_rectangle_t{
     }
     void Decrease(){
       c--;
-      if(c < ts){
+      if(c < _dc){
         gs[c]++;
         if(gs[c] > ge[c]){
           Decrease();
@@ -49,10 +48,10 @@ struct iterate_grid_for_rectangle_t{
       _vf s /* size */
     ){
       while(1){
-        if(c + 1 < ts){
+        if(c + 1 < _dc){
           Increase(gbs, wp, s[c + 1]);
         }
-        else if(c < ts){
+        else if(c < _dc){
           gs[c]++;
           if(gs[c] <= ge[c]){
             return true;
@@ -74,21 +73,20 @@ struct iterate_grid_for_rectangle_t{
     }
 };
 
-template <uint8_t ts>
 struct iterate_grid_for_circle_t{
   public:
-    fan::vec_wrap_t<ts, sint32_t> gs; /* grid start */
+    _vsi32 gs; /* grid start */
   private:
     uint8_t c = 0;
-    fan::vec_wrap_t<ts, sint32_t> ge[ts]; /* grid end */
+    _vsi32 ge[_dc]; /* grid end */
     bool NeedInit = true;
 
     void InitCurrent(const auto &gbs, const auto &wp, f32_t er){
-      if(c < ts){
+      if(c < _dc){
         gs[c] = (wp[c] - er) / gbs[c];
         ge[c] = (wp[c] + er) / gbs[c];
       }
-      if(c + 1 == ts){
+      if(c + 1 == _dc){
         gs[c]--; /* we increase this even before check ge[c] so this is needed */
       }
     }
@@ -98,7 +96,7 @@ struct iterate_grid_for_circle_t{
     }
     void Decrease(){
       c--;
-      if(c < ts){
+      if(c < _dc){
         gs[c]++;
         if(gs[c] > ge[c]){
           Decrease();
@@ -120,12 +118,12 @@ struct iterate_grid_for_circle_t{
       f32_t r /* radius */
     ){
       while(1){
-        if(c + 1 < ts){
+        if(c + 1 < _dc){
           f32_t rp = (f32_t)gs[c] * gbs[c] - wp[c]; /* relative position */
           f32_t roff = gbod(r, rp, rp + gbs[c]); /* relative offset */
           Increase(gbs, wp, roff);
         }
-        else if(c < ts){
+        else if(c < _dc){
           gs[c]++;
           if(gs[c] <= ge[c]){
             return true;

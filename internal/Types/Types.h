@@ -1,10 +1,12 @@
 struct __BCOL_P(t){
+  constexpr static uintptr_t _dc = BCOL_set_Dimension; /* dimension count */
+
   typedef CONCAT3(f,BCOL_set_PreferredFloatSize,_t) _f;
   typedef CONCAT3(uint,BCOL_set_PreferredFloatSize,_t) _ui;
   typedef CONCAT3(sint,BCOL_set_PreferredFloatSize,_t) _si;
-  typedef fan::vec_wrap_t<BCOL_set_Dimension, _f> _vf;
-  typedef fan::vec_wrap_t<BCOL_set_Dimension, uint32_t> _vui32;
-  typedef fan::vec_wrap_t<BCOL_set_Dimension, sint32_t> _vsi32;
+  typedef fan::vec_wrap_t<_dc, _f> _vf;
+  typedef fan::vec_wrap_t<_dc, uint32_t> _vui32;
+  typedef fan::vec_wrap_t<_dc, sint32_t> _vsi32;
   typedef fan::vec_wrap_t<4, _f> _4f;
 
   #include "../Math.h"
