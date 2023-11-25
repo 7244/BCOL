@@ -108,6 +108,7 @@
     }
 
     VisualSolve_t VisualSolve;
+
     #if BCOL_set_SupportGrid == 1
       if((grid_result.at * GridBlockSize - position).length() < (closest_shape.intersection_pos - position).length()){
         this->VisualSolve_Grid_cb(
@@ -121,14 +122,11 @@
     #endif
     {
       if(closest_shape.sip.ObjectID.iic()){
-        VisualSolve.rgba = _4f(0, 0, 0, 1);
-        VisualSolve.normal = 0;
-        VisualSolve.emit = 0;
-        VisualSolve.at = 0;
-        return VisualSolve;
+        return VisualSolve_t(0);
       }
       VisualSolve_Shape_cb(this, &closest_shape.sip, position, closest_shape.intersection_pos, &VisualSolve);
     }
+
     return VisualSolve;
   }
 #endif

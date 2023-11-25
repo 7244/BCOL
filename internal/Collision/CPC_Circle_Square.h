@@ -1,3 +1,4 @@
+#if 0
 void CPC_Circle_Square(
   _vf p0,
   _f p0Size,
@@ -26,16 +27,34 @@ void CPC_Circle_Square(
   }
   else{
     for(uint32_t d = 0; d < _dc; d++){
+      (*op0)[d] = p1[d] + copysign(p1Size + p0Size, Sp0[d]);
+      (*oDirection)[d] = copysign(_f(1), Sp0[d]);
+    }
+    for(uint32_t d = 0; d < _dc; d++){
       if(SPp0[d] > p1Size){
         continue;
-      }
-      for(uint32_t d0 = 0; d0 < _dc; d0++){
-        (*op0)[d0] = p1[d0] + fan::math::copysign(p1Size + p0Size, Sp0[d0]);
-        (*oDirection)[d0] = fan::math::copysign(_f(1), Sp0[d0]);
       }
       (*op0)[d] = p0[d];
       (*oDirection)[d] = 0;
       break;
     }
   }
+}
+#endif
+
+void CPC_Circle_Square(
+  _vf p0,
+  _f p0Size,
+  _vf p1,
+  _f p1Size,
+  _vf *op0,
+  _vf *oDirection
+){
+  _vf p0_p1 = p1 - p0;
+  _vf dirsign = (p0_p1 * 9999999).clamp(_f(-1), _f(+1));
+  *op0 = p0; /* TODO */
+  *oDirection = (p0_p1.abs() - p1Size).max(_vf(0));
+  *oDirection /= p0Size;
+  *oDirection *= -dirsign;
+  *oDirection = (*oDirection).normalize();
 }
