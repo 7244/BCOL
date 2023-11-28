@@ -1,4 +1,5 @@
 #if BCOL_set_VisualSolve == 1
+  /* this function is thread safe */
   VisualSolve_t Ray(
     _vf position,
     _vf direction
