@@ -212,3 +212,37 @@ bool ray_circle_intersection(
     return true;
   }
 }
+
+template<bool expect>
+bool ray_rectangle_intersection(
+  _vf ray_pos,
+  _vf ray_dir,
+  _vf shape_pos,
+  _vf shape_size,
+  _vf &intersection_position
+){
+  _vf edge_diff = (shape_pos - ray_pos).abs() - shape_size;
+  edge_diff = edge_diff.max(_vf(0));
+
+  _f need = (edge_diff / ray_dir).abs().max();
+  if(need == 0){
+    /* ray is inside shape */
+    return false;
+  }
+  _vf intersection = ray_pos + ray_dir * need;
+
+  #if 0
+    /* TODO need better formula here */
+  #elif 1
+    /* good method but can be broken in big floating points */
+    _vf intersub = intersection - shape_pos;
+    intersub = intersub.abs() - shape_size;
+    if(intersub.max() > 0.0001){
+      return false;
+    }
+  #endif
+
+  intersection_position = intersection;
+
+  return true;
+}

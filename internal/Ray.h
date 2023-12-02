@@ -97,8 +97,23 @@
                 closest_shape.sip = sip;
                 closest_shape.intersection_pos = intersection_pos;
               }
+              break;
             }
             case ShapeEnum_t::Rectangle:{
+              auto sd = ShapeData_Rectangle_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
+              auto sp = ObjectData->Position + sd->Position;
+
+              _vf intersection_pos;
+              if(ray_rectangle_intersection<false>(position, direction, sp, sd->Size, intersection_pos) == false){
+                break;
+              }
+              if((intersection_pos - position).length() < BCOL_set_VisualSolve_dmin){
+                break;
+              }
+              if((intersection_pos - position).length() < (closest_shape.intersection_pos - position).length()){
+                closest_shape.sip = sip;
+                closest_shape.intersection_pos = intersection_pos;
+              }
               break;
             }
           }

@@ -138,14 +138,13 @@ _f WantedCollisionRequesters = 0;
           _vf WorldPosition = ObjectData1->Position + RectangleData_->Position;
 
           CPCU_Circle_Rectangle_t CData;
-          CPCU_Circle_Rectangle_Pre(
+          if(CPCU_Circle_Rectangle_Pre(
             NewPosition,
             CircleSize0,
             WorldPosition,
             RectangleData_->Size,
-            &CData);
-
-          if(!CPCU_Circle_Rectangle_IsThereCollision(&CData)){
+            &CData)
+          ){
             break;
           }
 
