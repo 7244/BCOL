@@ -12,9 +12,8 @@ bool CPCU_Rectangle_Circle_Pre(
 ){
   _vf p0_p1 = p0 - p1;
   Data->dirsign = (p0_p1 * 9999999).clamp(_f(-1), _f(+1));
-  Data->outdir = (p0_p1.abs() - p1Size).max(_vf(0));
-  /* TODO use .sum() */
-  return Data->outdir.length() >= p0Size;
+  Data->outdir = (p0_p1.abs() - p0Size).max(_vf(0));
+  return Data->outdir.length() >= p1Size;
 }
 
 void CPCU_Rectangle_Circle_Solve(
@@ -26,6 +25,6 @@ void CPCU_Rectangle_Circle_Solve(
   _vf *op0,
   _vf *oDirection
 ){
-  *op0 = p0 + (Data->outdir * (p0Size / Data->outdir.length()) - Data->outdir) * Data->dirsign;
-  *oDirection = (Data->outdir / p0Size * Data->dirsign).normalize();
+  *op0 = p0 + (Data->outdir * (p1Size / Data->outdir.length()) - Data->outdir) * Data->dirsign;
+  *oDirection = (Data->outdir / p1Size * Data->dirsign).normalize();
 }

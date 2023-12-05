@@ -6,19 +6,9 @@ void CPC_Rectangle_Square(
   _vf *op0,
   _vf *oDirection
 ){
-  _vf Sp0 = p0 - p1;
-  _vf SPp0 = Sp0.abs();
-  _vf Diff = SPp0 / (p0Size + p1Size);
-  if(Diff.y > Diff.x){
-    op0->y = p1.y + fan::math::copysign(p0Size.y + p1Size, Sp0.y);
-    op0->x = p0.x;
-    oDirection->y = fan::math::copysign(1, Sp0.y);
-    oDirection->x = 0;
-  }
-  else{
-    op0->y = p0.y;
-    op0->x = p1.x + fan::math::copysign(p0Size.x + p1Size, Sp0.x);
-    oDirection->y = 0;
-    oDirection->x = fan::math::copysign(1, Sp0.x);
-  }
+  _vf p0_p1 = p0 - p1;
+  _vf dirsign = (p0_p1 * 9999999).clamp(_f(-1), _f(+1));
+  _vf outdir = (p0_p1.abs() - p0Size).max(_vf(0));
+  *op0 = p0 + (outdir * (p1Size / outdir.max()) - outdir) * dirsign;
+  *oDirection = ((outdir / outdir.max()).floor() * dirsign).normalize();
 }

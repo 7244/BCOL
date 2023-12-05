@@ -28,6 +28,9 @@
 #ifndef BCOL_set_VisualSolve
   #define BCOL_set_VisualSolve 0
 #endif
+#ifndef BCOL_set_DefaultVelocity0
+  #define BCOL_set_DefaultVelocity0 1
+#endif
 
 #if BCOL_set_VisualSolve != 0
   #ifndef BCOL_set_VisualSolve_dmin
@@ -79,6 +82,7 @@
   #undef BCOL_set_ConstantFriction
 #endif
 #undef BCOL_Include
+#undef BCOL_set_DefaultVelocity0
 #if BCOL_set_VisualSolve != 0
   #if BCOL_set_SupportGrid != 0
     #undef BCOL_set_VisualSolve_GridContact

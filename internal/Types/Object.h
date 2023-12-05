@@ -13,7 +13,11 @@ struct ObjectData_t{
 
   _vf Position;
 
-  _vf Velocity;
+  _vf Velocity
+  #if BCOL_set_DefaultVelocity0 == 1
+    = _vf(0)
+  #endif
+  ;
 
   ShapeList_t ShapeList;
 
@@ -28,6 +32,7 @@ struct ObjectData_t{
 #define BLL_set_Language 1
 #define BLL_set_type_node uint32_t
 #define BLL_set_NodeDataType ObjectData_t
+#define BLL_set_CPP_Node_ConstructDestruct
 #include BCOL_Include(BLL/BLL.h)
 
 typedef ObjectList_NodeReference_t ObjectID_t;

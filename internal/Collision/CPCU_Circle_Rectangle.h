@@ -13,7 +13,6 @@ bool CPCU_Circle_Rectangle_Pre(
   _vf p0_p1 = p0 - p1;
   Data->dirsign = (p0_p1 * 9999999).clamp(_f(-1), _f(+1));
   Data->outdir = (p0_p1.abs() - p1Size).max(_vf(0));
-  /* TODO use .sum() */
   return Data->outdir.length() >= p0Size;
 }
 

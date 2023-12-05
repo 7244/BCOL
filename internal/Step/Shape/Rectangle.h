@@ -40,6 +40,7 @@ _f WantedCollisionRequesters = 0;
       GridBlockSize_D2,
       &oRectangle,
       &oDirection);
+
     WantedPosition += oRectangle;
     WantedDirection += oDirection;
     WantedCollisionRequesters++;
