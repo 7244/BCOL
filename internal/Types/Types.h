@@ -24,14 +24,17 @@ struct __BCOL_P(t){
     ShapeID_t(auto p){
       static_assert(
         __is_type_same<ShapeList_Circle_NodeReference_t, decltype(p)> ||
-        __is_type_same<ShapeList_Rectangle_NodeReference_t, decltype(p)>);
+        __is_type_same<ShapeList_Rectangle_NodeReference_t, decltype(p)> ||
+        __is_type_same<ShapeList_DPF_NodeReference_t, decltype(p)>
+      );
       this->ID = p.NRI;
     }
   };
 
   enum class ShapeEnum_t : uint8_t{
     Circle,
-    Rectangle
+    Rectangle,
+    DPF
   };
 
   struct ShapeData_t{
@@ -48,6 +51,7 @@ struct __BCOL_P(t){
 
   #include "Shape/Circle/Types.h"
   #include "Shape/Rectangle/Types.h"
+  #include "Shape/DPF/Types.h"
 
   #include "Object.h"
 
@@ -83,6 +87,7 @@ struct __BCOL_P(t){
 
   ShapeList_Circle_t ShapeList_Circle;
   ShapeList_Rectangle_t ShapeList_Rectangle;
+  ShapeList_DPF_t ShapeList_DPF;
 
   #if BCOL_set_DynamicToDynamic == 1
     struct Contact_Shape_Flag{

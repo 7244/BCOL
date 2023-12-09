@@ -12,3 +12,4 @@ void AddShapeToObject(
 
 #include "Circle/Circle.h"
 #include "Rectangle/Rectangle.h"
+#include "DPF/DPF.h"
