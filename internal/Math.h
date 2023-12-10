@@ -246,3 +246,46 @@ bool ray_rectangle_intersection(
 
   return true;
 }
+
+template<bool expect>
+bool ray_dpf_intersection(
+  _vf ray_pos,
+  _vf ray_dir,
+  _vf shape_pos[_dc],
+  _vf &intersection_position
+){
+  const _f EPSILON = 0.0000001;
+  _vf edge1 = shape_pos[1] - shape_pos[0];
+  _vf edge2 = shape_pos[2] - shape_pos[0];
+  _vf rayVecXe2 = ray_dir.cross(edge2);
+  _f det = edge1.dot(rayVecXe2);
+
+  if (det > -EPSILON && det < EPSILON){
+    return false;
+  }
+
+  _f invDet = 1.0 / det;
+  _vf s = ray_pos - shape_pos[0];
+  _f u = invDet * s.dot(rayVecXe2);
+
+  if (u < 0.0 || u > 1.0){
+    return false;
+  }
+
+  _vf sXe1 = s.cross(edge1);
+  _f v = invDet * ray_dir.dot(sXe1);
+
+  if (v < 0.0 || u + v > 1.0){
+    return false;
+  }
+
+  float t = invDet * edge2.dot(sXe1);
+
+  if(t > EPSILON){
+    intersection_position = ray_pos + ray_dir * t;
+    return true;
+  }
+  else{
+    return false;
+  }
+}

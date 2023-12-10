@@ -116,6 +116,26 @@
               }
               break;
             }
+            case ShapeEnum_t::DPF:{
+              auto sd = ShapeData_DPF_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
+              _vf sp[_dc];
+              for(uintptr_t d = 0; d < _dc; d++){
+                sp[d] = ObjectData->Position + sd->p[d];
+              }
+
+              _vf intersection_pos;
+              if(ray_dpf_intersection<false>(position, direction, sp, intersection_pos) == false){
+                break;
+              }
+              if((intersection_pos - position).length() < BCOL_set_VisualSolve_dmin){
+                break;
+              }
+              if((intersection_pos - position).length() < (closest_shape.intersection_pos - position).length()){
+                closest_shape.sip = sip;
+                closest_shape.intersection_pos = intersection_pos;
+              }
+              break;
+            }
           }
         }
 
