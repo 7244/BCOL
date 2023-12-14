@@ -7,6 +7,9 @@ struct ShapeData_DPF_t{
   }p;
 };
 
+/* this is for BakeCurrentForVisualSolve()'s UseEmbree=1 */
+static_assert(sizeof(ShapeData_DPF_t::p_t) == sizeof(_vf) * _dc);
+
 #define BLL_set_prefix ShapeList_DPF
 #define BLL_set_Language 1
 #define BLL_set_AreWeInsideStruct 1

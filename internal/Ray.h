@@ -1,5 +1,6 @@
 #if BCOL_set_VisualSolve == 1
   /* this function is thread safe */
+  /* (if BCOL_set_UseEmbree is 0) */
   VisualSolve_t Ray(
     _vf position,
     _vf direction
@@ -74,74 +75,106 @@
     closest_shape.sip.ObjectID.sic();
     closest_shape.intersection_pos = position + 999999999;
 
-    {
-      ShapeInfoPack_t sip;
-      sip.ObjectID = this->ObjectList.GetNodeFirst();
-      while(sip.ObjectID != this->ObjectList.dst){
-        auto ObjectData = this->GetObjectData(sip.ObjectID);
+    #if BCOL_set_UseEmbree == 1
+      {
+        RTCRayHit rayhit;
+        rayhit.ray.org_x = position.x;
+        rayhit.ray.org_y = position.y;
+        rayhit.ray.org_z = position.z;
+        rayhit.ray.dir_x = direction.x;
+        rayhit.ray.dir_y = direction.y;
+        rayhit.ray.dir_z = direction.z;
+        rayhit.ray.tnear = BCOL_set_VisualSolve_dmin;
+        rayhit.ray.tfar = BCOL_set_VisualSolve_dmax;
+        rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
+        
+        RTCIntersectContext context;
+        rtcInitIntersectContext(&context);
 
-        for(sip.ShapeID.ID = 0; sip.ShapeID.ID < ObjectData->ShapeList.Current; sip.ShapeID.ID++){
-          sip.ShapeEnum = ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeEnum;
-          switch(sip.ShapeEnum){
-            case ShapeEnum_t::Circle:{
-              auto CircleData = ShapeData_Circle_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
-              auto circle_pos = ObjectData->Position + CircleData->Position;
-              _vf intersection_pos;
-              if(ray_circle_intersection(position, direction, circle_pos, CircleData->Size, intersection_pos) == false){
-                break;
-              }
-              if((intersection_pos - position).length() < BCOL_set_VisualSolve_dmin){
-                break;
-              }
-              if((intersection_pos - position).length() < (closest_shape.intersection_pos - position).length()){
-                closest_shape.sip = sip;
-                closest_shape.intersection_pos = intersection_pos;
-              }
-              break;
-            }
-            case ShapeEnum_t::Rectangle:{
-              auto sd = ShapeData_Rectangle_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
-              auto sp = ObjectData->Position + sd->Position;
+        rtcIntersect1(embree.scene, &context, &rayhit);
 
-              _vf intersection_pos;
-              if(ray_rectangle_intersection<false>(position, direction, sp, sd->Size, intersection_pos) == false){
-                break;
-              }
-              if((intersection_pos - position).length() < BCOL_set_VisualSolve_dmin){
-                break;
-              }
-              if((intersection_pos - position).length() < (closest_shape.intersection_pos - position).length()){
-                closest_shape.sip = sip;
-                closest_shape.intersection_pos = intersection_pos;
-              }
-              break;
-            }
-            case ShapeEnum_t::DPF:{
-              auto sd = ShapeData_DPF_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
-              _vf sp[_dc];
-              for(uintptr_t d = 0; d < _dc; d++){
-                sp[d] = ObjectData->Position + sd->p[d];
-              }
-
-              _vf intersection_pos;
-              if(ray_dpf_intersection<false>(position, direction, sp, intersection_pos) == false){
-                break;
-              }
-              if((intersection_pos - position).length() < BCOL_set_VisualSolve_dmin){
-                break;
-              }
-              if((intersection_pos - position).length() < (closest_shape.intersection_pos - position).length()){
-                closest_shape.sip = sip;
-                closest_shape.intersection_pos = intersection_pos;
-              }
-              break;
-            }
+        if(rayhit.hit.geomID != RTC_INVALID_GEOMETRY_ID){
+          if(rayhit.ray.tfar < (closest_shape.intersection_pos - position).length()){
+            closest_shape.sip.ObjectID.NRI = 0;
+            closest_shape.sip.ShapeEnum = ShapeEnum_t::DPF;
+            closest_shape.sip.ShapeID = ShapeList_Rectangle_NodeReference_t{0};
+            closest_shape.intersection_pos = position + direction * rayhit.ray.tfar;
           }
         }
-
-        sip.ObjectID = sip.ObjectID.Next(&this->ObjectList);
       }
-    }
+    #else
+      {
+        ShapeInfoPack_t sip;
+        sip.ObjectID = this->ObjectList.GetNodeFirst();
+        while(sip.ObjectID != this->ObjectList.dst){
+          auto ObjectData = this->GetObjectData(sip.ObjectID);
+
+          for(sip.ShapeID.ID = 0; sip.ShapeID.ID < ObjectData->ShapeList.Current; sip.ShapeID.ID++){
+            sip.ShapeEnum = ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeEnum;
+            switch(sip.ShapeEnum){
+              case ShapeEnum_t::Circle:{
+                auto CircleData = ShapeData_Circle_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
+                auto circle_pos = ObjectData->Position + CircleData->Position;
+                _vf intersection_pos;
+                if(ray_circle_intersection(position, direction, circle_pos, CircleData->Size, intersection_pos) == false){
+                  break;
+                }
+                if((intersection_pos - position).length() < BCOL_set_VisualSolve_dmin){
+                  break;
+                }
+                if((intersection_pos - position).length() < (closest_shape.intersection_pos - position).length()){
+                  closest_shape.sip = sip;
+                  closest_shape.intersection_pos = intersection_pos;
+                }
+                break;
+              }
+              case ShapeEnum_t::Rectangle:{
+                auto sd = ShapeData_Rectangle_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
+                auto sp = ObjectData->Position + sd->Position;
+
+                _vf intersection_pos;
+                if(ray_rectangle_intersection<false>(position, direction, sp, sd->Size, intersection_pos) == false){
+                  break;
+                }
+                if((intersection_pos - position).length() < BCOL_set_VisualSolve_dmin){
+                  break;
+                }
+                if((intersection_pos - position).length() < (closest_shape.intersection_pos - position).length()){
+                  closest_shape.sip = sip;
+                  closest_shape.intersection_pos = intersection_pos;
+                }
+                break;
+              }
+              /* TODO */
+              #if BCOL_set_Dimension == 3
+              case ShapeEnum_t::DPF:{
+                auto sd = ShapeData_DPF_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
+                _vf sp[_dc];
+                for(uintptr_t d = 0; d < _dc; d++){
+                  sp[d] = ObjectData->Position + sd->p[d];
+                }
+
+                _vf intersection_pos;
+                if(ray_dpf_intersection<false>(position, direction, sp, intersection_pos) == false){
+                  break;
+                }
+                if((intersection_pos - position).length() < BCOL_set_VisualSolve_dmin){
+                  break;
+                }
+                if((intersection_pos - position).length() < (closest_shape.intersection_pos - position).length()){
+                  closest_shape.sip = sip;
+                  closest_shape.intersection_pos = intersection_pos;
+                }
+                break;
+              }
+              #endif
+            }
+          }
+
+          sip.ObjectID = sip.ObjectID.Next(&this->ObjectList);
+        }
+      }
+    #endif
 
     VisualSolve_t VisualSolve;
 

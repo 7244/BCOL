@@ -207,6 +207,14 @@ struct __BCOL_P(t){
     uint64_t StepNumber;
   #endif
 
+  #if BCOL_set_UseEmbree == 1
+    struct{
+      RTCDevice device;
+      RTCScene scene;
+      RTCGeometry geom;
+    }embree;
+  #endif
+
   #include "../Collision/Collision.h"
   #include "../Object.h"
   #include "../BaseFunctions.h"

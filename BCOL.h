@@ -31,6 +31,9 @@
 #ifndef BCOL_set_DefaultVelocity0
   #define BCOL_set_DefaultVelocity0 1
 #endif
+#ifndef BCOL_set_UseEmbree
+  #define BCOL_set_UseEmbree 0
+#endif
 
 #if BCOL_set_VisualSolve != 0
   #ifndef BCOL_set_VisualSolve_dmin
@@ -82,6 +85,7 @@
   #undef BCOL_set_ConstantFriction
 #endif
 #undef BCOL_Include
+#undef BCOL_set_UseEmbree
 #undef BCOL_set_DefaultVelocity0
 #if BCOL_set_VisualSolve != 0
   #if BCOL_set_SupportGrid != 0
