@@ -22,6 +22,10 @@ void Open(const OpenProperties_t &p){
     embree.device = rtcNewDevice(NULL);
     embree.scene = rtcNewScene(embree.device);
     embree.geom = rtcNewGeometry(embree.device, RTC_GEOMETRY_TYPE_TRIANGLE);
+    rtcCommitGeometry(embree.geom);
+    embree.geoid = rtcAttachGeometry(embree.scene, embree.geom);
+    rtcReleaseGeometry(embree.geom);
+    rtcCommitScene(embree.scene);
   #endif
 }
 
@@ -52,6 +56,9 @@ void Close(){
       #if BCOL_set_Dimension != 3
         #error TODO
       #endif
+
+      rtcDetachGeometry(embree.scene, embree.geoid);
+      embree.geom = rtcNewGeometry(embree.device, RTC_GEOMETRY_TYPE_TRIANGLE);
 
       auto *vb = (ShapeData_DPF_t::p_t *)rtcSetNewGeometryBuffer(
         embree.geom,

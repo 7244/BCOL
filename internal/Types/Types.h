@@ -212,6 +212,7 @@ struct __BCOL_P(t){
       RTCDevice device;
       RTCScene scene;
       RTCGeometry geom;
+      uint32_t geoid;
     }embree;
   #endif
 
