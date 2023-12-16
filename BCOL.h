@@ -28,6 +28,15 @@
 #ifndef BCOL_set_VisualSolve
   #define BCOL_set_VisualSolve 0
 #endif
+#ifndef BCOL_set_VisualSolve_dmin
+  #define BCOL_set_VisualSolve_dmin 0.1
+#endif
+#ifndef BCOL_set_VisualSolve_dmax
+  #define BCOL_set_VisualSolve_dmax 99999999
+#endif
+#ifndef BCOL_set_VisualSolve_CalculateBarycentric
+  #define BCOL_set_VisualSolve_CalculateBarycentric 0
+#endif
 #ifndef BCOL_set_DefaultVelocity0
   #define BCOL_set_DefaultVelocity0 1
 #endif
@@ -35,13 +44,13 @@
   #define BCOL_set_UseEmbree 0
 #endif
 
+#if BCOL_set_UseEmbree == 1
+  #if BCOL_set_Dimension != 3
+    #error embree only works with dimension 3
+  #endif
+#endif
+
 #if BCOL_set_VisualSolve != 0
-  #ifndef BCOL_set_VisualSolve_dmin
-    #define BCOL_set_VisualSolve_dmin 0.1
-  #endif
-  #ifndef BCOL_set_VisualSolve_dmax
-    #define BCOL_set_VisualSolve_dmax 99999999
-  #endif
   #if BCOL_set_SupportGrid != 0
     #ifndef BCOL_set_VisualSolve_GridContact
       #error define BCOL_set_VisualSolve_GridContact
@@ -87,13 +96,12 @@
 #undef BCOL_Include
 #undef BCOL_set_UseEmbree
 #undef BCOL_set_DefaultVelocity0
-#if BCOL_set_VisualSolve != 0
-  #if BCOL_set_SupportGrid != 0
-    #undef BCOL_set_VisualSolve_GridContact
-  #endif
-  #undef BCOL_set_VisualSolve_dmax
-  #undef BCOL_set_VisualSolve_dmin
+#ifdef BCOL_set_VisualSolve_GridContact
+  #undef BCOL_set_VisualSolve_GridContact
 #endif
+#undef BCOL_set_VisualSolve_CalculateBarycentric
+#undef BCOL_set_VisualSolve_dmax
+#undef BCOL_set_VisualSolve_dmin
 #undef BCOL_set_VisualSolve
 #undef BCOL_set_StepNumber
 #undef BCOL_set_DynamicToDynamic

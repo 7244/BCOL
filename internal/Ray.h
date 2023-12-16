@@ -144,6 +144,81 @@
     }
   }
 
+  VisualSolve_t _Ray_GetVisualSolve(
+    #if set_bcol_UseEmbree == 1
+      _vf Normal,
+      _v<_dc - 1, _f> Barycentric,
+    #endif
+    _vf position,
+    _vf direction,
+    _Ray_closest_shape_t &closest_shape
+    #if BCOL_set_SupportGrid == 1
+      , _Ray_grid_result_t &grid_result
+    #endif
+  ){
+    VisualSolve_t VisualSolve;
+
+    #if BCOL_set_SupportGrid == 1
+      if((grid_result.at * GridBlockSize - position).length() < (closest_shape.intersection_pos - position).length()){
+        this->VisualSolve_Grid_cb(
+          this,
+          grid_result.gi,
+          grid_result.np,
+          grid_result.at,
+          &VisualSolve);
+      }
+      else
+    #endif
+    {
+      if(closest_shape.sip.ObjectID.iic()){
+        return VisualSolve_t(0);
+      }
+
+      #if set_bcol_UseEmbree == 1
+        /* Normal and Barycentric is in parameter */
+      #else
+        _vf Normal;
+        _v<_dc - 1, _f> Barycentric;
+        auto ObjectData = this->GetObjectData(closest_shape.sip.ObjectID);
+        switch(closest_shape.sip.ShapeEnum){
+          case ShapeEnum_t::Circle:{
+            auto sd = ShapeData_Circle_Get(ObjectData->ShapeList.ptr[closest_shape.sip.ShapeID.ID].ShapeID);
+            auto sp = ObjectData->Position + sd->Position;
+            Normal = CalculateNormalFromCircleIntersection(sp, closest_shape.intersection_pos);
+            Barycentric = _v<_dc - 1, _f>(0); /* TODO */
+            break;
+          }
+          case ShapeEnum_t::Rectangle:{
+            auto sd = ShapeData_Rectangle_Get(ObjectData->ShapeList.ptr[closest_shape.sip.ShapeID.ID].ShapeID);
+            auto sp = ObjectData->Position + sd->Position;
+            Normal = CalculateNormalFromRectangleIntersection(sp, sd->Size, closest_shape.intersection_pos);
+            Barycentric = CalculateBarycentricFromRectangleIntersection(sp, sd->Size, closest_shape.intersection_pos);
+            break;
+          }
+          case ShapeEnum_t::DPF:{
+            auto sd = ShapeData_DPF_Get(ObjectData->ShapeList.ptr[closest_shape.sip.ShapeID.ID].ShapeID);
+            Normal = _vf(0); /* TODO */
+            Barycentric = _v<_dc - 1, _f>(0); /* TODO */
+            break;
+          }
+        }
+      #endif
+      VisualSolve_Shape_cb(
+        this,
+        &closest_shape.sip,
+        position,
+        closest_shape.intersection_pos,
+        Normal,
+        #if BCOL_set_VisualSolve_CalculateBarycentric == 1
+          Barycentric,
+        #endif
+        &VisualSolve
+      );
+    }
+
+    return VisualSolve;
+  }
+
   /* this function is thread safe */
   VisualSolve_t Ray(
     _vf position,
@@ -165,58 +240,47 @@
     closest_shape.intersection_pos = position + 999999999;
 
     #if BCOL_set_UseEmbree == 1
-      {
-        RTCRayHit rayhit;
-        rayhit.ray.org_x = position.x;
-        rayhit.ray.org_y = position.y;
-        rayhit.ray.org_z = position.z;
-        rayhit.ray.dir_x = direction.x;
-        rayhit.ray.dir_y = direction.y;
-        rayhit.ray.dir_z = direction.z;
-        rayhit.ray.tnear = BCOL_set_VisualSolve_dmin;
-        rayhit.ray.tfar = BCOL_set_VisualSolve_dmax;
-        rayhit.ray.time = 0;
-        rayhit.ray.mask = -1;
-        rayhit.ray.id = 0;
-        rayhit.ray.flags = 0;
-        rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
+      RTCRayHit rayhit;
+      rayhit.ray.org_x = position.x;
+      rayhit.ray.org_y = position.y;
+      rayhit.ray.org_z = position.z;
+      rayhit.ray.dir_x = direction.x;
+      rayhit.ray.dir_y = direction.y;
+      rayhit.ray.dir_z = direction.z;
+      rayhit.ray.tnear = BCOL_set_VisualSolve_dmin;
+      rayhit.ray.tfar = BCOL_set_VisualSolve_dmax;
+      rayhit.ray.time = 0;
+      rayhit.ray.mask = -1;
+      rayhit.ray.id = 0;
+      rayhit.ray.flags = 0;
+      rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
 
-        rtcIntersect1(embree.scene, &rayhit);
+      rtcIntersect1(embree.scene, &rayhit);
 
-        if(rayhit.hit.geomID != RTC_INVALID_GEOMETRY_ID){
-          if(rayhit.ray.tfar < (closest_shape.intersection_pos - position).length()){
-            closest_shape.sip.ObjectID.NRI = 0;
-            closest_shape.sip.ShapeEnum = ShapeEnum_t::DPF;
-            closest_shape.sip.ShapeID = ShapeList_Rectangle_NodeReference_t{0};
-            closest_shape.intersection_pos = position + direction * rayhit.ray.tfar;
-          }
+      if(rayhit.hit.geomID != RTC_INVALID_GEOMETRY_ID){
+        if(rayhit.ray.tfar < (closest_shape.intersection_pos - position).length()){
+          closest_shape.sip.ObjectID.NRI = 0;
+          closest_shape.sip.ShapeEnum = ShapeEnum_t::DPF;
+          closest_shape.sip.ShapeID = ShapeList_Rectangle_NodeReference_t{0};
+          closest_shape.intersection_pos = position + direction * rayhit.ray.tfar;
         }
       }
     #else
       _Ray_SolveShape(position, direction, closest_shape);
     #endif
 
-    VisualSolve_t VisualSolve;
-
-    #if BCOL_set_SupportGrid == 1
-      if((grid_result.at * GridBlockSize - position).length() < (closest_shape.intersection_pos - position).length()){
-        this->VisualSolve_Grid_cb(
-          this,
-          grid_result.gi,
-          grid_result.np,
-          grid_result.at,
-          &VisualSolve);
-      }
-      else
-    #endif
-    {
-      if(closest_shape.sip.ObjectID.iic()){
-        return VisualSolve_t(0);
-      }
-      VisualSolve_Shape_cb(this, &closest_shape.sip, position, closest_shape.intersection_pos, &VisualSolve);
-    }
-
-    return VisualSolve;
+    return _Ray_GetVisualSolve(
+      #if BCOL_set_UseEmbree == 1
+        _vf(rayhit.hit.Ng_x, rayhit.hit.Ng_y, rayhit.hit.Ng_z),
+        _v<_dc - 1, _f>(rayhit.hit.u, rayhit.hit.v),
+      #endif
+      position,
+      direction,
+      closest_shape
+      #if BCOL_set_SupportGrid == 1
+        , grid_result
+      #endif
+    );
   }
 
   /* this does not give better performance, why? */
@@ -247,40 +311,38 @@
     }
 
     #if BCOL_set_UseEmbree == 1
-      {
-        RTCRayHit16 rayhit;
-        int valid[16];
-        for(uint8_t i = 0; i < 16; i++){
-          rayhit.ray.org_x[i] = position[i].x;
-          rayhit.ray.org_y[i] = position[i].y;
-          rayhit.ray.org_z[i] = position[i].z;
-          rayhit.ray.dir_x[i] = direction[i].x;
-          rayhit.ray.dir_y[i] = direction[i].y;
-          rayhit.ray.dir_z[i] = direction[i].z;
-          rayhit.ray.tnear[i] = BCOL_set_VisualSolve_dmin;
-          rayhit.ray.tfar[i] = BCOL_set_VisualSolve_dmax;
-          rayhit.ray.time[i] = 0;
-          rayhit.ray.mask[i] = -1;
-          rayhit.ray.id[i] = 0;
-          rayhit.ray.flags[i] = 0;
-          rayhit.hit.geomID[i] = RTC_INVALID_GEOMETRY_ID;
-          valid[i] = -1;
-        }
+      RTCRayHit16 rayhit;
+      int valid[16];
+      for(uint8_t i = 0; i < 16; i++){
+        rayhit.ray.org_x[i] = position[i].x;
+        rayhit.ray.org_y[i] = position[i].y;
+        rayhit.ray.org_z[i] = position[i].z;
+        rayhit.ray.dir_x[i] = direction[i].x;
+        rayhit.ray.dir_y[i] = direction[i].y;
+        rayhit.ray.dir_z[i] = direction[i].z;
+        rayhit.ray.tnear[i] = BCOL_set_VisualSolve_dmin;
+        rayhit.ray.tfar[i] = BCOL_set_VisualSolve_dmax;
+        rayhit.ray.time[i] = 0;
+        rayhit.ray.mask[i] = -1;
+        rayhit.ray.id[i] = 0;
+        rayhit.ray.flags[i] = 0;
+        rayhit.hit.geomID[i] = RTC_INVALID_GEOMETRY_ID;
+        valid[i] = -1;
+      }
 
-        rtcIntersect16(valid, embree.scene, &rayhit);
+      rtcIntersect16(valid, embree.scene, &rayhit);
 
-        for(uint8_t i = 0; i < 16; i++){
-          if(rayhit.hit.geomID[i] == RTC_INVALID_GEOMETRY_ID){
-            continue;
-          }
-          if(rayhit.ray.tfar[i] > (closest_shape[i].intersection_pos - position[i]).length()){
-            continue;
-          }
-          closest_shape[i].sip.ObjectID.NRI = 0;
-          closest_shape[i].sip.ShapeEnum = ShapeEnum_t::DPF;
-          closest_shape[i].sip.ShapeID = ShapeList_Rectangle_NodeReference_t{0};
-          closest_shape[i].intersection_pos = position[i] + direction[i] * rayhit.ray.tfar[i];
+      for(uint8_t i = 0; i < 16; i++){
+        if(rayhit.hit.geomID[i] == RTC_INVALID_GEOMETRY_ID){
+          continue;
         }
+        if(rayhit.ray.tfar[i] > (closest_shape[i].intersection_pos - position[i]).length()){
+          continue;
+        }
+        closest_shape[i].sip.ObjectID.NRI = 0;
+        closest_shape[i].sip.ShapeEnum = ShapeEnum_t::DPF;
+        closest_shape[i].sip.ShapeID = ShapeList_Rectangle_NodeReference_t{0};
+        closest_shape[i].intersection_pos = position[i] + direction[i] * rayhit.ray.tfar[i];
       }
     #else
       for(uint8_t i = 0; i < 16; i++){
@@ -289,25 +351,18 @@
     #endif
 
     for(uint8_t i = 0; i < 16; i++){
-      #if BCOL_set_SupportGrid == 1
-        if((grid_result[i].at * GridBlockSize - position[i]).length() < (closest_shape[i].intersection_pos - position[i]).length()){
-          this->VisualSolve_Grid_cb(
-            this,
-            grid_result[i].gi,
-            grid_result[i].np,
-            grid_result[i].at,
-            &VisualSolve[i]);
-        }
-        else
-      #endif
-      {
-        if(closest_shape[i].sip.ObjectID.iic()){
-          VisualSolve[i] = VisualSolve_t(0);
-        }
-        else{
-          VisualSolve_Shape_cb(this, &closest_shape[i].sip, position[i], closest_shape[i].intersection_pos, &VisualSolve[i]);
-        }
-      }
+      VisualSolve[i] = _Ray_GetVisualSolve(
+        #if BCOL_set_UseEmbree == 1
+          _vf(rayhit.hit.Ng_x[i], rayhit.hit.Ng_y[i], rayhit.hit.Ng_z[i]),
+          _v<_dc - 1, _f>(rayhit.hit.u[i], rayhit.hit.v[i]),
+        #endif
+        position[i],
+        direction[i],
+        closest_shape[i]
+        #if BCOL_set_SupportGrid == 1
+          , grid_result[i]
+        #endif
+      );
     }
   }
 #endif

@@ -13,7 +13,7 @@ struct __BCOL_P(t){
   typedef _v<_dc, sint32_t> _vsi32;
   typedef _v<3, _f> _3f;
 
-  #include "../Math.h"
+  #include "../Math/Math.h"
 
   typedef uint32_t ShapeID_ID_t;
 
@@ -163,29 +163,21 @@ struct __BCOL_P(t){
       const ShapeInfoPack_t *,
       _vf, /* ray source */
       _vf, /* ray at */
+      _vf, /* normal */
+      #if BCOL_set_VisualSolve_CalculateBarycentric
+        _v<_dc - 1, _f>,
+      #endif
       VisualSolve_t *
     );
     VisualSolve_Shape_cb_t VisualSolve_Shape_cb
     #if BCOL_set_HaveDefaultCB == 1
-      = [](
-        __BCOL_P(t) *,
-        const ShapeInfoPack_t *,
-        _vf,
-        _vf,
-        VisualSolve_t *
-      ){}
+      = [](auto...){}
     #endif
     ;
     #if BCOL_set_SupportGrid == 1
       VisualSolve_Grid_cb_t VisualSolve_Grid_cb
       #if BCOL_set_HaveDefaultCB == 1
-        = [](
-          __BCOL_P(t) *,
-          _vsi32,
-          _vf,
-          _vf,
-          VisualSolve_t *
-        ){}
+        = [](auto...){}
       #endif
       ;
     #endif
