@@ -94,6 +94,10 @@
   #undef BCOL_set_ConstantFriction
 #endif
 #undef BCOL_Include
+
+#ifdef BCOL_set_DPFStore
+  #undef BCOL_set_DPFStore
+#endif
 #undef BCOL_set_UseEmbree
 #undef BCOL_set_DefaultVelocity0
 #ifdef BCOL_set_VisualSolve_GridContact

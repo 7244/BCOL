@@ -26,6 +26,8 @@ void Open(const OpenProperties_t &p){
     embree.geoid = rtcAttachGeometry(embree.scene, embree.geom);
     rtcReleaseGeometry(embree.geom);
     rtcCommitScene(embree.scene);
+
+    embree.sipList = NULL;
   #endif
 }
 
@@ -53,12 +55,12 @@ void Close(){
       #if BCOL_set_PreferredFloatSize != 32
         #error TODO make embree use same float size as PreferredFloatSize
       #endif
-      #if BCOL_set_Dimension != 3
-        #error TODO
-      #endif
 
+      A_resize(embree.sipList, NULL);
       rtcDetachGeometry(embree.scene, embree.geoid);
       embree.geom = rtcNewGeometry(embree.device, RTC_GEOMETRY_TYPE_TRIANGLE);
+
+      embree.sipList = (ShapeInfoPack_t *)A_resize(NULL, ShapeList_DPF.Usage() * sizeof(ShapeInfoPack_t));
 
       auto *vb = (ShapeData_DPF_t::p_t *)rtcSetNewGeometryBuffer(
         embree.geom,
@@ -68,14 +70,33 @@ void Close(){
         3 * sizeof(_f),
         ShapeList_DPF.Usage() * 3);
 
-      {
-        uintptr_t ci = 0;
-        auto nr = ShapeList_DPF.GetNodeFirst();
-        while(nr != ShapeList_DPF.dst){
-          auto n = ShapeList_DPF.GetNodeByReference(nr);
-          vb[ci] = n->data.p;
-          nr = n->NextNodeReference;
-          ci++;
+      uint32_t DPFIndex = 0;
+
+      TraverseObjects_t to;
+      TraverseObjects_init(&to);
+      while(TraverseObjects_loop(&to)){
+        ShapeInfoPack_t sip;
+        sip.ObjectID = to.ObjectID;
+        auto ObjectData = this->GetObjectData(sip.ObjectID);
+        for(sip.ShapeID.ID = 0; sip.ShapeID.ID < ObjectData->ShapeList.Current; sip.ShapeID.ID++){
+          sip.ShapeEnum = ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeEnum;
+          switch(sip.ShapeEnum){
+            case ShapeEnum_t::Circle:{
+              // TODO
+              break;
+            }
+            case ShapeEnum_t::Rectangle:{
+              // TODO
+              break;
+            }
+            case ShapeEnum_t::DPF:{
+              auto sd = ShapeData_DPF_Get(ObjectData->ShapeList.ptr[sip.ShapeID.ID].ShapeID);
+              embree.sipList[DPFIndex] = sip;
+              vb[DPFIndex] = sd->p;
+              DPFIndex++;
+              break;
+            }
+          }
         }
       }
 

@@ -5,6 +5,11 @@ struct ShapeData_DPF_t{
       return arr[x];
     }
   }p;
+  #ifdef BCOL_set_DPFStore
+    struct u_t{
+      BCOL_set_DPFStore
+    }u;
+  #endif
 };
 
 /* this is for BakeCurrentForVisualSolve()'s UseEmbree=1 */

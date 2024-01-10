@@ -176,6 +176,10 @@
 
       #if set_bcol_UseEmbree == 1
         /* Normal and Barycentric is in parameter */
+        {
+          Normal = Normal.normalize();
+          /* TODO this normal always points same direction in triangle */
+        }
       #else
         _vf Normal;
         _v<_dc - 1, _f> Barycentric;
@@ -259,9 +263,7 @@
 
       if(rayhit.hit.geomID != RTC_INVALID_GEOMETRY_ID){
         if(rayhit.ray.tfar < (closest_shape.intersection_pos - position).length()){
-          closest_shape.sip.ObjectID.NRI = 0;
-          closest_shape.sip.ShapeEnum = ShapeEnum_t::DPF;
-          closest_shape.sip.ShapeID = ShapeList_Rectangle_NodeReference_t{0};
+          closest_shape.sip = embree.sipList[rayhit.hit.primID];
           closest_shape.intersection_pos = position + direction * rayhit.ray.tfar;
         }
       }

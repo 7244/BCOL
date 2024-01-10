@@ -40,7 +40,8 @@ struct __BCOL_P(t){
   struct ShapeData_t{
     ShapeEnum_t ShapeEnum;
 
-    /* TODO why we have ShapeID here? */
+    /* this ShapeData_t is used in ShapeList which is stored in Object. */
+    /* ShapeID shows internal id of shape. */
     ShapeID_t ShapeID;
   };
 
@@ -104,11 +105,7 @@ struct __BCOL_P(t){
       uint32_t Flag = Contact_Shape_Flag::EnableContact;
       PreSolveAfter_Shape_cb_t AfterCB
       #if BCOL_set_HaveDefaultCB == 1
-        = [](
-          __BCOL_P(t) *,
-          const ShapeInfoPack_t *,
-          const ShapeInfoPack_t *
-        ){}
+        = [](auto...){}
       #endif
       ;
     };
@@ -134,12 +131,7 @@ struct __BCOL_P(t){
 
     PreSolve_Shape_cb_t PreSolve_Shape_cb
     #if BCOL_set_HaveDefaultCB == 1
-      = [](
-        __BCOL_P(t) *,
-        const ShapeInfoPack_t *,
-        const ShapeInfoPack_t *,
-        Contact_Shape_t *
-      ){}
+      = [](auto...){}
     #endif
     ;
   #endif
@@ -148,12 +140,7 @@ struct __BCOL_P(t){
     _f GridBlockSize;
     PreSolve_Grid_cb_t PreSolve_Grid_cb
     #if BCOL_set_HaveDefaultCB == 1
-      = [](
-        __BCOL_P(t) *,
-        const ShapeInfoPack_t *,
-        _vsi32 /* Grid */,
-        Contact_Grid_t *
-      ){}
+      = [](auto...){}
     #endif
     ;
   #endif
@@ -185,12 +172,7 @@ struct __BCOL_P(t){
   #ifdef BCOL_set_PostSolve_Grid
     PostSolve_Grid_cb_t PostSolve_Grid_cb
     #if BCOL_set_HaveDefaultCB == 1
-      = [](
-        __BCOL_P(t) *,
-        const ShapeInfoPack_t *,
-        _vsi32 /* Grid */,
-        ContactResult_Grid_t *
-      ){}
+      = [](auto...){}
     #endif
     ;
   #endif
@@ -205,6 +187,7 @@ struct __BCOL_P(t){
       RTCScene scene;
       RTCGeometry geom;
       uint32_t geoid;
+      ShapeInfoPack_t *sipList;
     }embree;
   #endif
 
