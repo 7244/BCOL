@@ -182,6 +182,9 @@ _f WantedCollisionRequesters = 0;
 
           break;
         }
+        default: {
+          __abort();
+        }
       }
     }
 

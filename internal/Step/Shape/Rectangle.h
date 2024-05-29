@@ -116,6 +116,9 @@ _f WantedCollisionRequesters = 0;
           /* TODO */
           break;
         }
+        default: {
+          __abort();
+        }
       }
     }
 

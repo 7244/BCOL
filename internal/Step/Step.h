@@ -35,6 +35,9 @@ void Step(
         case ShapeEnum_t::Rectangle:{
           #include "Shape/Rectangle.h"
         }
+        default: {
+          __abort();
+        }
         // TODO DPF
       }
 

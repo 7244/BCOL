@@ -32,8 +32,8 @@ struct ObjectData_t{
 #define BLL_set_Language 1
 #define BLL_set_type_node uint32_t
 #define BLL_set_NodeDataType ObjectData_t
-#define BLL_set_CPP_Node_ConstructDestruct
-#include BCOL_Include(BLL/BLL.h)
+#define BLL_set_CPP_Node_ConstructDestruct 1
+#include <BLL/BLL.h>
 
 typedef ObjectList_NodeReference_t ObjectID_t;
 
