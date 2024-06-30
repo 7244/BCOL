@@ -58,12 +58,6 @@
   #endif
 #endif
 
-#if defined(BCOL_set_IncludePath)
-  #define BCOL_Include(p) <BCOL_set_IncludePath/p>
-#else
-  #error BCOL_set_IncludePath needs to be defined.
-#endif
-
 #if BCOL_set_StoreExtraDataInsideObject == 0
 #elif BCOL_set_StoreExtraDataInsideObject == 1
   #ifndef BCOL_set_ExtraDataInsideObject
@@ -93,7 +87,6 @@
 #ifndef BCOL_set_ConstantFriction
   #undef BCOL_set_ConstantFriction
 #endif
-#undef BCOL_Include
 
 #ifdef BCOL_set_DPFStore
   #undef BCOL_set_DPFStore
@@ -118,8 +111,5 @@
 #undef BCOL_set_HaveDefaultCB
 #undef BCOL_set_StoreExtraDataInsideObject
 #undef BCOL_set_PreferredFloatSize
-#ifdef BCOL_set_IncludePath
-  #undef BCOL_set_IncludePath
-#endif
 #undef BCOL_set_Dimension
 #undef BCOL_set_prefix
