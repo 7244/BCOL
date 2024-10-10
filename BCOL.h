@@ -1,3 +1,7 @@
+#ifdef BCOL_set_HaveDefaultCB
+  #error outdated setting BCOL_set_HaveDefaultCB. it's always enabled now.
+#endif
+
 #ifndef BCOL_set_prefix
   #error ifndef BCOL_set_prefix
 #endif
@@ -9,9 +13,6 @@
 #endif
 #ifndef BCOL_set_StoreExtraDataInsideObject
   #define BCOL_set_StoreExtraDataInsideObject 0
-#endif
-#ifndef BCOL_set_HaveDefaultCB
-  #define BCOL_set_HaveDefaultCB 1
 #endif
 #ifndef BCOL_set_SupportGrid
   #define BCOL_set_SupportGrid 0
@@ -108,7 +109,6 @@
 #elif BCOL_set_StoreExtraDataInsideObject == 1
   #undef BCOL_set_ExtraDataInsideObject
 #endif
-#undef BCOL_set_HaveDefaultCB
 #undef BCOL_set_StoreExtraDataInsideObject
 #undef BCOL_set_PreferredFloatSize
 #undef BCOL_set_Dimension

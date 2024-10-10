@@ -103,11 +103,7 @@ struct __BCOL_P(t){
 
     struct Contact_Shape_t{
       uint32_t Flag = Contact_Shape_Flag::EnableContact;
-      PreSolveAfter_Shape_cb_t AfterCB
-      #if BCOL_set_HaveDefaultCB == 1
-        = [](auto...){}
-      #endif
-      ;
+      PreSolveAfter_Shape_cb_t AfterCB = [](auto...){};
     };
 
     typedef void (*PreSolve_Shape_cb_t)(
@@ -129,20 +125,12 @@ struct __BCOL_P(t){
       Contact->Flag ^= Contact->Flag & Contact_Shape_Flag::EnableContact;
     }
 
-    PreSolve_Shape_cb_t PreSolve_Shape_cb
-    #if BCOL_set_HaveDefaultCB == 1
-      = [](auto...){}
-    #endif
-    ;
+    PreSolve_Shape_cb_t PreSolve_Shape_cb = [](auto...){};
   #endif
 
   #if BCOL_set_SupportGrid == 1
     _f GridBlockSize;
-    PreSolve_Grid_cb_t PreSolve_Grid_cb
-    #if BCOL_set_HaveDefaultCB == 1
-      = [](auto...){}
-    #endif
-    ;
+    PreSolve_Grid_cb_t PreSolve_Grid_cb = [](auto...){};
   #endif
   #if BCOL_set_VisualSolve == 1
     typedef void (*VisualSolve_Shape_cb_t)(
@@ -156,25 +144,13 @@ struct __BCOL_P(t){
       #endif
       VisualSolve_t *
     );
-    VisualSolve_Shape_cb_t VisualSolve_Shape_cb
-    #if BCOL_set_HaveDefaultCB == 1
-      = [](auto...){}
-    #endif
-    ;
+    VisualSolve_Shape_cb_t VisualSolve_Shape_cb = [](auto...){};
     #if BCOL_set_SupportGrid == 1
-      VisualSolve_Grid_cb_t VisualSolve_Grid_cb
-      #if BCOL_set_HaveDefaultCB == 1
-        = [](auto...){}
-      #endif
-      ;
+      VisualSolve_Grid_cb_t VisualSolve_Grid_cb = [](auto...){};
     #endif
   #endif
   #ifdef BCOL_set_PostSolve_Grid
-    PostSolve_Grid_cb_t PostSolve_Grid_cb
-    #if BCOL_set_HaveDefaultCB == 1
-      = [](auto...){}
-    #endif
-    ;
+    PostSolve_Grid_cb_t PostSolve_Grid_cb = [](auto...){};
   #endif
 
   #if BCOL_set_StepNumber == 1
