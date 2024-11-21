@@ -182,8 +182,9 @@ _f WantedCollisionRequesters = 0;
 
           break;
         }
-        default: {
-          __abort();
+        case ShapeEnum_t::DPF:{
+          /* TODO DPF */
+          break;
         }
       }
     }

@@ -35,10 +35,10 @@ void Step(
         case ShapeEnum_t::Rectangle:{
           #include "Shape/Rectangle.h"
         }
-        default: {
-          __abort();
+        case ShapeEnum_t::DPF:{
+          /* TODO DPF */
+          break;
         }
-        // TODO DPF
       }
 
       /* user is able to change pointers by adding or removing objects inside callbacks */
