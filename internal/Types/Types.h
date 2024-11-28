@@ -180,4 +180,5 @@ struct __BCOL_P(t){
   #include "../CompiledShapes.h"
   #include "../ImportHM.h"
   #include "../Ray.h"
+  #include "../Point.h"
 };
