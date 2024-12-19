@@ -54,7 +54,7 @@ void Step(
       if(VelocityHypotenuse != 0){
         _vf VelocityNormal = ObjectData0->Velocity / VelocityHypotenuse;
 
-        _vf CollidedVelocity = VelocityNormal.reflect(DirectionAverage);
+        _vf CollidedVelocity = VelocityNormal.tangential_reflect(DirectionAverage);
 
         ObjectData0->Velocity = CollidedVelocity * VelocityHypotenuse;
 

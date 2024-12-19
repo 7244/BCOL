@@ -33,7 +33,7 @@ _f WantedCollisionRequesters = 0;
 
     _vf oCircle;
     _vf oDirection;
-    CPC_Circle_Square(
+    CPD_Circle_Square(
       NewPosition,
       CircleSize0,
       _vf(ig.gs) * GridBlockSize + GridBlockSize_D2,
