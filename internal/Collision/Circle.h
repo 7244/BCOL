@@ -31,6 +31,7 @@ bool CPCU_Circle_Rectangle_Pre(
   _f p0Size,
   _vf p1,
   _vf p1Size,
+  _rotf p1rot, /* TODO process */
   CPCU_Circle_Rectangle_t *Data
 ){
   _vf p0_p1 = p0 - p1;

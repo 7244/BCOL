@@ -1,6 +1,7 @@
 struct ShapeProperties_Rectangle_t{
   _vf Position;
   _vf Size;
+  _rotf Rotation = 0;
 };
 
 ShapeData_Rectangle_t *ShapeData_Rectangle_Get(
@@ -17,6 +18,7 @@ ShapeID_t NewShape_Rectangle(
   auto SData = this->ShapeData_Rectangle_Get(ShapeID);
   SData->Position = Properties->Position;
   SData->Size = Properties->Size;
+  SData->Rotation = Properties->Rotation;
   this->AddShapeToObject(ObjectID, ShapeEnum_t::Rectangle, ShapeID);
   return ShapeID;
 }

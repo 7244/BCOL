@@ -1,5 +1,6 @@
 struct __BCOL_P(t){
   constexpr static uintptr_t _dc = BCOL_set_Dimension; /* dimension count */
+  constexpr static uintptr_t _rotc = _dc * (_dc - 1) / 2;
 
   typedef CONCAT3(f,BCOL_set_PreferredFloatSize,_t) _f;
   typedef CONCAT3(uint,BCOL_set_PreferredFloatSize,_t) _ui;
@@ -9,6 +10,7 @@ struct __BCOL_P(t){
   using _v = fan::vec_wrap_t<dc, t>;
 
   typedef _v<_dc, _f> _vf;
+  typedef _v<_rotc, _f> _rotf;
   typedef _v<_dc, uint32_t> _vui32;
   typedef _v<_dc, sint32_t> _vsi32;
   typedef _v<3, _f> _3f;

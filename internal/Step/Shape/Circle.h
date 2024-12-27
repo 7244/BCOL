@@ -143,6 +143,7 @@ _f WantedCollisionRequesters = 0;
             CircleSize0,
             WorldPosition,
             RectangleData_->Size,
+            RectangleData_->Rotation,
             &CData)
           ){
             break;

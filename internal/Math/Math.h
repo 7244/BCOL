@@ -11,6 +11,57 @@ static _f clamp(_f v, _f mi, _f ma){
   return v < mi ? mi : v > ma ? ma : v;
 }
 
+static _vf math_MultiplyVectorByMatrix(_vf vector, _vf matrix[_dc]){
+  _vf res = 0;
+
+  for(uintptr_t d0 = 0; d0 < _dc; d0++){
+    for(uintptr_t d1 = 0; d1 < _dc; d1++){
+      res[d0] += matrix[d0][d1] * vector[d1];
+    }
+  }
+
+  return res;
+}
+
+static void math_SetMatrixRotationSingle(
+  _vf matrix[_dc],
+  uintptr_t p0,
+  uintptr_t p1,
+  _f angle
+){
+  for(auto dc0 = _dc; dc0--;){
+    for(auto dc1 = _dc; dc1--;){
+      matrix[dc0][dc1] = dc0 == dc1;
+    }
+  }
+
+  matrix[p0][p0] = cos(angle);
+  matrix[p0][p1] = -sin(angle);
+  matrix[p1][p0] = sin(angle);
+  matrix[p1][p1] = cos(angle);
+}
+
+static _vf math_RotatePosition(_vf Position, _vf Around, _rotf Rotation){
+  _vf rotpairmat[_rotc][_dc];
+
+  {
+    uintptr_t rotc = 0;
+    for(uintptr_t dc0 = 0; dc0 < _dc; dc0++){
+      for(uintptr_t dc1 = dc0 + 1; dc1 < _dc; dc1++){
+        math_SetMatrixRotationSingle(rotpairmat[rotc], dc0, dc1, Rotation[rotc]);
+        rotc++;
+      }
+    }
+  }
+
+  _vf result = Around - Position;
+  for(uintptr_t rotc = 0; rotc < _rotc; rotc++){
+    result = math_MultiplyVectorByMatrix(result, rotpairmat[rotc]);
+  }
+
+  return result + Around;
+}
+
 #include "Grid.h"
 #include "Ray.h"
 

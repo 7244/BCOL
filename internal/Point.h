@@ -1,4 +1,4 @@
-/* if multiple object is in same place, undefined behavior */
+/* if multiple object is in same place, will pick random */
 ObjectID_t GetObjectIDByPosition(
   _vf pos
 ){
@@ -27,13 +27,8 @@ ObjectID_t GetObjectIDByPosition(
           auto RectangleData = ShapeData_Rectangle_Get(ObjectData->ShapeList.ptr[ShapeID.ID].ShapeID);
           auto spos = ObjectData->Position + RectangleData->Position;
           auto ssize = RectangleData->Size;
-          auto dc = _dc;
-          while(dc--){
-            if(pos[dc] < spos[dc] - ssize[dc] || pos[dc] > spos[dc] + ssize[dc]){
-              break;
-            }
-          }
-          if(dc < _dc){
+          auto npoint = math_RotatePosition(pos, spos, RectangleData->Rotation);
+          if(((npoint - spos).abs() - ssize).max() <= 0){
             return ObjectID;
           }
           break;

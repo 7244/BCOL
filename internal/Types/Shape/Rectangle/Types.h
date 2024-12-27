@@ -3,6 +3,8 @@ struct ShapeData_Rectangle_t{
   _vf Position;
 
   _vf Size;
+
+  _rotf Rotation;
 };
 
 #define BLL_set_prefix ShapeList_Rectangle
