@@ -54,7 +54,7 @@ static _vf math_RotatePosition(_vf Position, _vf Around, _rotf Rotation){
     }
   }
 
-  _vf result = Around - Position;
+  _vf result = Position - Around;
   for(uintptr_t rotc = 0; rotc < _rotc; rotc++){
     result = math_MultiplyVectorByMatrix(result, rotpairmat[rotc]);
   }

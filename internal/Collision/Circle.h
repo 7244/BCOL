@@ -31,13 +31,23 @@ bool CPCU_Circle_Rectangle_Pre(
   _f p0Size,
   _vf p1,
   _vf p1Size,
-  _rotf p1rot, /* TODO process */
+  _rotf p1rot,
   CPCU_Circle_Rectangle_t *Data
 ){
-  _vf p0_p1 = p0 - p1;
-  Data->dirsign = (p0_p1 * 9999999).clamp(_f(-1), _f(+1));
-  Data->outdir = (p0_p1.abs() - p1Size).max(_vf(0));
-  return Data->outdir.length() >= p0Size;
+  auto np0 = math_RotatePosition(p0, p1, p1rot);
+
+  auto diff = np0 - p1;
+  Data->dirsign = (diff * 9999999).clamp(_f(-1), _f(+1));
+
+  _vf side_outside = (diff.abs() - p1Size).ceil().clamp(_f(+0), _f(+1));
+  _vf side_inside = (diff.abs() - diff.abs().max() + 1).max(_vf(0)).floor();
+
+  _vf side = (side_outside + side_inside).min(_vf(1));
+
+  _vf point = p1 + side * Data->dirsign * p1Size;
+  Data->outdir = ((np0 - point).abs() * side * Data->dirsign).normalize();
+
+  return (diff.abs() - Data->outdir.abs() * p0Size - p1Size).max() > 0;
 }
 
 void CPCU_Circle_Rectangle_Solve(
@@ -45,10 +55,24 @@ void CPCU_Circle_Rectangle_Solve(
   _f p0Size,
   _vf p1,
   _vf p1Size,
+  _rotf p1rot,
   CPCU_Circle_Rectangle_t *Data,
   _vf *op0,
   _vf *oDirection
 ){
-  *op0 = p0 + (Data->outdir * (p0Size / Data->outdir.length()) - Data->outdir) * Data->dirsign;
-  *oDirection = (Data->outdir / p0Size * Data->dirsign).normalize();
+  auto np0 = math_RotatePosition(p0, p1, p1rot);
+
+  auto diff = np0 - p1;
+
+  _vf side_outside = (diff.abs() - p1Size).ceil().clamp(_f(+0), _f(+1));
+  _vf side_inside = (diff.abs() - diff.abs().max() + 1).max(_vf(0)).floor();
+
+  _vf side = (side_outside + side_inside).min(_vf(1));
+
+  _vf point = p1 + side * Data->dirsign * p1Size;
+
+  *op0 = point + Data->outdir * p0Size + diff * (_vf(1) - side);
+  *op0 = math_RotatePosition(*op0, p1, -p1rot);
+  *oDirection = Data->outdir;
+  *oDirection = math_RotatePosition(*oDirection, 0, -p1rot);
 }
