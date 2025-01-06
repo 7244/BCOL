@@ -22,8 +22,8 @@ void CPD_Circle_Square(
 }
 
 struct CPCU_Circle_Rectangle_t{
-  _vf dirsign;
-  _vf outdir;
+  _vf point;
+  _vf outdiff;
 };
 
 bool CPCU_Circle_Rectangle_Pre(
@@ -37,17 +37,10 @@ bool CPCU_Circle_Rectangle_Pre(
   auto np0 = math_RotatePosition(p0, p1, p1rot);
 
   auto diff = np0 - p1;
-  Data->dirsign = (diff * 9999999).clamp(_f(-1), _f(+1));
+  Data->point = diff.clamp(-p1Size, +p1Size);
+  Data->outdiff = diff - Data->point;
 
-  _vf side_outside = (diff.abs() - p1Size).ceil().clamp(_f(+0), _f(+1));
-  _vf side_inside = (diff.abs() - diff.abs().max() + 1).max(_vf(0)).floor();
-
-  _vf side = (side_outside + side_inside).min(_vf(1));
-
-  _vf point = p1 + side * Data->dirsign * p1Size;
-  Data->outdir = ((np0 - point).abs() * side * Data->dirsign).normalize();
-
-  return (diff.abs() - Data->outdir.abs() * p0Size - p1Size).max() > 0;
+  return Data->outdiff.length() > p0Size;
 }
 
 void CPCU_Circle_Rectangle_Solve(
@@ -60,19 +53,28 @@ void CPCU_Circle_Rectangle_Solve(
   _vf *op0,
   _vf *oDirection
 ){
-  auto np0 = math_RotatePosition(p0, p1, p1rot);
+  _f pdiv = (Data->point.abs() / p1Size).max();
+  _vf outdir;
+  if(pdiv != 1 || Data->outdiff.length() == 0){
+    /* TODO not good implement */
 
-  auto diff = np0 - p1;
+    if(pdiv != 0){
+      Data->point /= pdiv;
+      outdir = ((Data->point.abs() - Data->point.abs().max()).floor() + 1).max(_vf(0)) * (Data->point / Data->point.abs().max());
+    }
+    else{
+      /* TODO find clearest place to move it */
+      Data->point = p1Size;
+      outdir = _vf(1).normalize();
+    }
+  }
+  else{
+    outdir = Data->outdiff.normalize();
+  }
 
-  _vf side_outside = (diff.abs() - p1Size).ceil().clamp(_f(+0), _f(+1));
-  _vf side_inside = (diff.abs() - diff.abs().max() + 1).max(_vf(0)).floor();
-
-  _vf side = (side_outside + side_inside).min(_vf(1));
-
-  _vf point = p1 + side * Data->dirsign * p1Size;
-
-  *op0 = point + Data->outdir * p0Size + diff * (_vf(1) - side);
-  *op0 = math_RotatePosition(*op0, p1, -p1rot);
-  *oDirection = Data->outdir;
+  *op0 = Data->point + outdir * p0Size;
+  *op0 = math_RotatePosition(*op0, 0, -p1rot);
+  *op0 += p1;
+  *oDirection = outdir;
   *oDirection = math_RotatePosition(*oDirection, 0, -p1rot);
 }
