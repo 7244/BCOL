@@ -245,12 +245,12 @@
 
     #if BCOL_set_UseEmbree == 1
       RTCRayHit rayhit;
-      rayhit.ray.org_x = position.x;
-      rayhit.ray.org_y = position.y;
-      rayhit.ray.org_z = position.z;
-      rayhit.ray.dir_x = direction.x;
-      rayhit.ray.dir_y = direction.y;
-      rayhit.ray.dir_z = direction.z;
+      rayhit.ray.org_x = position[0];
+      rayhit.ray.org_y = position[1];
+      rayhit.ray.org_z = position[2];
+      rayhit.ray.dir_x = direction[0];
+      rayhit.ray.dir_y = direction[1];
+      rayhit.ray.dir_z = direction[2];
       rayhit.ray.tnear = BCOL_set_VisualSolve_dmin;
       rayhit.ray.tfar = BCOL_set_VisualSolve_dmax;
       rayhit.ray.time = 0;
@@ -316,12 +316,12 @@
       RTCRayHit16 rayhit;
       int valid[16];
       for(uint8_t i = 0; i < 16; i++){
-        rayhit.ray.org_x[i] = position[i].x;
-        rayhit.ray.org_y[i] = position[i].y;
-        rayhit.ray.org_z[i] = position[i].z;
-        rayhit.ray.dir_x[i] = direction[i].x;
-        rayhit.ray.dir_y[i] = direction[i].y;
-        rayhit.ray.dir_z[i] = direction[i].z;
+        rayhit.ray.org_x[i] = position[i][0];
+        rayhit.ray.org_y[i] = position[i][1];
+        rayhit.ray.org_z[i] = position[i][2];
+        rayhit.ray.dir_x[i] = direction[i][0];
+        rayhit.ray.dir_y[i] = direction[i][1];
+        rayhit.ray.dir_z[i] = direction[i][2];
         rayhit.ray.tnear[i] = BCOL_set_VisualSolve_dmin;
         rayhit.ray.tfar[i] = BCOL_set_VisualSolve_dmax;
         rayhit.ray.time[i] = 0;
