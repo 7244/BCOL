@@ -15,7 +15,7 @@ void CPD_Circle_Square(
   _vf side = (side_outside + side_inside).min(_vf(1));
 
   _vf point = p1 + side * dirsign * p1Size;
-  _vf outdir = ((p0 - point).abs() * side * dirsign).normalize();
+  _vf outdir = ((p0 - point).abs() * side * dirsign).normalized();
 
   *op0 = point + outdir * p0Size + diff * (_vf(1) - side);
   *oDirection = outdir;
@@ -65,11 +65,11 @@ void CPCU_Circle_Rectangle_Solve(
     else{
       /* TODO find clearest place to move it */
       Data->point = p1Size;
-      outdir = _vf(1).normalize();
+      outdir = _vf(1).normalized();
     }
   }
   else{
-    outdir = Data->outdiff.normalize();
+    outdir = Data->outdiff.normalized();
   }
 
   *op0 = Data->point + outdir * p0Size;

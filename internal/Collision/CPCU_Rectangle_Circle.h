@@ -26,5 +26,5 @@ void CPCU_Rectangle_Circle_Solve(
   _vf *oDirection
 ){
   *op0 = p0 + (Data->outdir * (p1Size / Data->outdir.length()) - Data->outdir) * Data->dirsign;
-  *oDirection = (Data->outdir / p1Size * Data->dirsign).normalize();
+  *oDirection = (Data->outdir / p1Size * Data->dirsign).normalized();
 }

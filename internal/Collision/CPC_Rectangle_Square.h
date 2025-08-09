@@ -10,5 +10,5 @@ void CPC_Rectangle_Square(
   _vf dirsign = (p0_p1 * 9999999).clamp(_f(-1), _f(+1));
   _vf outdir = (p0_p1.abs() - p0Size).max(_vf(0));
   *op0 = p0 + (outdir * (p1Size / outdir.max()) - outdir) * dirsign;
-  *oDirection = ((outdir / outdir.max()).floor() * dirsign).normalize();
+  *oDirection = ((outdir / outdir.max()).floor() * dirsign).normalized();
 }

@@ -75,12 +75,12 @@ static _vf CalculateNormalFromRectangleIntersection(_vf Position, _vf Size, _vf 
       normal[d] = copysign(_f(1), -diff[d]);
     }
   }
-  normal = normal.normalize(); /* incase corner intersection */
+  normal = normal.normalized(); /* incase corner intersection */
   return normal;
 }
 
 static _vf CalculateNormalFromCircleIntersection(_vf Position, _vf Intersection){
-  return (Intersection - Position).normalize();
+  return (Intersection - Position).normalized();
 }
 
 static _v<_dc - 1, _f> CalculateBarycentricFromRectangleIntersection(_vf Position, _vf Size, _vf Intersection){
